@@ -201,45 +201,4 @@ public class SAVOP {
 		}
 		return -1;
 	}
-	public static void listagemPaginada(String[][] deputados, int numDeputados) {
-        int contPaginas = 0;
-        for (int i = 0; i < numDeputados; i++) {
-            if (i % MAX_LINHAS_PAGINA == 0) {
-                if (contPaginas > 0) {
-                    Utilitarios.pausa();
-                }
-                contPaginas++;
-                System.out.println("\nPágina: " + contPaginas);
-                Utilitarios.cabecalho();
-
-            }
-            System.out.printf("%-6s||%-30s||%-10s||%-12s%n", deputados[i][0], deputados[i][1], deputados[i][2], deputados[i][3]);
-
-        }
-    }
-
-
-
-
-//public static int lerVotacoes(char[] votacoes, int numDeputados, String assuntoVotado) throws FileNotFoundException {
-//        String linhaTemp;
-//        
-//        System.out.println("Introduzir nome da votação desejada:");
-//        assuntoVotado = sc.next();
-//        
-//        Scanner fileIn = new Scanner(new File(assuntoVotado));
-//        
-//        while (fileIn.hasNext()){
-//            String linha = fileIn.nextLine();
-//            
-//            if (linha.length()>0){
-//                linhaTemp=linha.trim();
-//                
-//            }
-//        }
-//        
-//        
-//        
-//
-//    }
 }

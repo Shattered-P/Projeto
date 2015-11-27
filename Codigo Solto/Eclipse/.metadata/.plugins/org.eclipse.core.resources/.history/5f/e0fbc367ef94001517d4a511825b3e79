@@ -50,7 +50,12 @@ public class SAVOP {
 			String linha = fileIn.nextLine();
 
 			if (linha.length() > 0) {
-				guardarDadosDeputado(linha, deputados, numDeputados, erros);
+				guardarDadosDeputado(linha, deputados, numDeputados, erros);// criar
+																			// método
+																			// numDeputados=guardarDadosDeputado(linha,
+																			// deputados,
+																			// numDeputados);
+
 			}
 		}
 		fileIn.close();
@@ -59,8 +64,7 @@ public class SAVOP {
 
 	}
 
-	public static int guardarDadosDeputado(String linha, String[][] deputados,
-			int numDeputados, Formatter erros) {
+	public static int guardarDadosDeputado(String linha, String[][] deputados, int numDeputados, Formatter erros) {
 
 		String[] temp = linha.split(";");
 
@@ -131,14 +135,12 @@ public class SAVOP {
 		return true;
 	}
 
+
 	public static int menuDadosDeputado(String[] deputado) {
 
-		System.out.printf("%6s-%30s-%7s-%12s%n", deputado[0], deputado[1],
-				deputado[2], deputado[3]);
+		System.out.printf("%6s-%30s-%7s-%12s%n", deputado[0], deputado[1],deputado[2], deputado[3]);
 
-		String texto = "ATUALIZAR" + "\n NOME ... 1"
-				+ "\n DATA NASCIMENTO ... 2" + "\n TERMINAR ... 0"
-				+ "\n\nQUAL A SUA OPÇÃO?";
+		String texto = "ATUALIZAR" + "\n NOME ... 1"+ "\n DATA NASCIMENTO ... 2" + "\n TERMINAR ... 0"+ "\n\nQUAL A SUA OPÇÃO?";
 		System.out.printf("%n%s%n", texto);
 		int op = sc.nextInt();
 		sc.nextLine();
@@ -149,7 +151,7 @@ public class SAVOP {
 		int op;
 		do {
 			System.out
-					.print("1 - Ler informação do ficheiro de texto \n2 - Listar informação de deputados \n3 - Menu alterar informação de deputado \n4 - Ver votação \n5 - Ver informação deputados  na votação \n6 - Ver Resultados da ultima votação \n7 - Ver resultados por idades \n8 - Sair");
+					.print("1 - Ler informação do ficheiro de texto \n2 - Listar informação de deputados \n3 - Alterar informação de deputado \n4 - Ver votação \n5 - Ver informação deputados  na votação \n6 - Ver Resultados da ultima votação \n7 - Ver resultados por idades \n8 - Sair");
 			op = sc.nextInt();
 			int numDeputados = 0;
 			switch (op) {
@@ -159,9 +161,6 @@ public class SAVOP {
 			case 2:
 				break;
 			case 3:
-				String idDeputado;
-				idDeputado = procurarDeputado();
-				actualizaInfoDeputado(idDeputado, deputados, numDeputados);
 				break;
 			case 4:
 				break;
@@ -178,68 +177,18 @@ public class SAVOP {
 			}
 		} while (true);
 	}
-
-	public static String procurarDeputado() {
-		String id;
-		System.out.print("Qual é o ID do deputado que quer procurar?");
-		id = sc.nextLine();
-		while(id.length() != 5) {
-			System.out.print("Id Inválido\nQual é o ID do deputado que quer procurar?");
-			id = sc.nextLine();
-		}
-		return id;
-	}
-
-
-	public static int pesquisarDeputadoPorID(String idDeputado,
-			int numDeputados, String[][] deputados) {
-
-		for (int i = 0; i < numDeputados; i++) {
+	
+	public static int pesquisarDeputadoPorID(String idDeputado, int numDeputados, String[][] deputados){
+		
+		for (int i=0; i<numDeputados;i++) {
 			if (deputados[i][0].equals(idDeputado)) {
 				return i;
+				
 			}
 		}
 		return -1;
 	}
-	public static void listagemPaginada(String[][] deputados, int numDeputados) {
-        int contPaginas = 0;
-        for (int i = 0; i < numDeputados; i++) {
-            if (i % MAX_LINHAS_PAGINA == 0) {
-                if (contPaginas > 0) {
-                    Utilitarios.pausa();
-                }
-                contPaginas++;
-                System.out.println("\nPágina: " + contPaginas);
-                Utilitarios.cabecalho();
-
-            }
-            System.out.printf("%-6s||%-30s||%-10s||%-12s%n", deputados[i][0], deputados[i][1], deputados[i][2], deputados[i][3]);
-
-        }
-    }
-
-
-
-
-//public static int lerVotacoes(char[] votacoes, int numDeputados, String assuntoVotado) throws FileNotFoundException {
-//        String linhaTemp;
-//        
-//        System.out.println("Introduzir nome da votação desejada:");
-//        assuntoVotado = sc.next();
-//        
-//        Scanner fileIn = new Scanner(new File(assuntoVotado));
-//        
-//        while (fileIn.hasNext()){
-//            String linha = fileIn.nextLine();
-//            
-//            if (linha.length()>0){
-//                linhaTemp=linha.trim();
-//                
-//            }
-//        }
-//        
-//        
-//        
-//
-//    }
 }
+
+
+

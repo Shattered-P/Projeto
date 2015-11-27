@@ -221,25 +221,25 @@ public class SAVOP {
 
 
 
-//public static int lerVotacoes(char[] votacoes, int numDeputados, String assuntoVotado) throws FileNotFoundException {
-//        String linhaTemp;
-//        
-//        System.out.println("Introduzir nome da votação desejada:");
-//        assuntoVotado = sc.next();
-//        
-//        Scanner fileIn = new Scanner(new File(assuntoVotado));
-//        
-//        while (fileIn.hasNext()){
-//            String linha = fileIn.nextLine();
-//            
-//            if (linha.length()>0){
-//                linhaTemp=linha.trim();
-//                
-//            }
-//        }
-//        
-//        
-//        
-//
-//    }
+public static int lerVotacoes(char[] votacoes, int numDeputados, String assuntoVotado) throws FileNotFoundException {
+        String linhaTemp;
+        
+        System.out.println("Introduzir nome da votação desejada:");
+        assuntoVotado = sc.next();
+        
+        Scanner fileIn = new Scanner(new File(assuntoVotado));
+        
+        while (fileIn.hasNext()){
+            String linha = fileIn.nextLine();
+            
+            if (linha.length()>0){
+                linhaTemp=linha.trim();
+                
+            }
+        }
+        
+        
+        
+
+    }
 }
