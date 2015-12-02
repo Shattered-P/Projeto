@@ -1,0 +1,366 @@
+package savop;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.Formatter;
+
+/**
+ *
+ * @author
+ */
+public class SAVOP {
+
+    private final static int MAX_DEPUTADOS = 230;
+    private final static String FILE_DEPUTADOS = "Deputados.txt";
+    private final static String PAGINA_HTML = "Pagina.html";
+    private final static int MAX_LINHAS_PAGINA = 5;
+    private final static String LOG_ERROS_DEP = ("errosDeputados.txt");
+
+    public static Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) throws FileNotFoundException {
+        String[][] deputados = new String[MAX_DEPUTADOS][4];
+
+        menu(deputados);
+
+    }
+
+    /**
+     * Carrega informação dos deputados para memória a partir de ficheiro de
+     * texto FILE_DEPUTADOS
+     *
+     * @param deputados - matriz de strings para guardar info dos deputados
+     * @return do número de depotados inseridos na matriz
+     * @throws FileNotFoundException
+     */
+    public static int lerInfoFicheiro(String[][] deputados)
+            throws FileNotFoundException {
+
+        Scanner fileIn = new Scanner(new File(FILE_DEPUTADOS));
+        Formatter erros = new Formatter(new File(LOG_ERROS_DEP));
+        int numDeputados = 0;
+
+        while (fileIn.hasNext() && numDeputados < MAX_DEPUTADOS) {
+            String linha = fileIn.nextLine();
+
+            if (linha.length() > 0) {
+                numDeputados = guardarDadosDeputado(linha, deputados,
+                        numDeputados, erros);
+            }
+        }
+        fileIn.close();
+        erros.close();
+
+        return numDeputados;
+
+    }
+
+    public static int guardarDadosDeputado(String linha, String[][] deputados,
+            int numDeputados, Formatter erros) {
+
+        String[] temp = linha.split(";");
+
+        if (temp.length == 4) {
+
+            String id = temp[0].trim();
+
+            if (id.length() == 5) {
+                deputados[numDeputados][0] = id;
+                deputados[numDeputados][1] = temp[1].trim();
+                deputados[numDeputados][2] = temp[2].trim();
+                deputados[numDeputados][3] = temp[3].trim();
+                numDeputados++;
+            } else {
+                erros.format("Linha incorreta porque %s incorreto", id);
+            }
+        } else {
+            erros.format("Linha: %f _ Campo Incorreto:\n %s ", numDeputados,
+                    linha);
+
+        }
+
+        return numDeputados;
+
+    }
+
+    /**
+     * Atualiza informação alterável de um deputado
+     *
+     * @param idDeputado - identificação do deputado
+     * @param deputados - matriz com toda a informação dos deputados
+     * @param nDeputados - número de deputados
+     * @return false se o deputado não foi encontrado ou true se foi encontrado
+     * e atualizadao provavelmente atualizado
+     */
+    public static boolean actualizaInfoDeputado(String idDeputado, String[][] deputados, int numDeputados) {
+        int pos, nc, np, ntp;
+        if ((pos = pesquisarDeputadoPorID(idDeputado, numDeputados, deputados)) > -1) {
+            System.out.printf("");
+            int op;
+            do {
+                op = menuDadosDeputado(deputados[pos]);
+                switch (op) {
+                    case 1:
+                        System.out.println("Novo nome:");
+                        deputados[pos][1] = sc.nextLine();
+                        break;
+                    case 2:
+                        System.out.println("Nova data:");
+                        deputados[pos][3] = sc.nextLine();
+                        break;
+                    case 0:
+                        System.out.println("Info correta");
+                        break;
+                    default:
+                        System.out.println("Opção incorreta");
+                        break;
+                }
+            } while (op != 0);
+        } else {
+            System.out.printf("O deputado %s não foi encontrado!", idDeputado);
+            return false;
+        }
+        return true;
+    }
+
+    public static int menuDadosDeputado(String[] deputado) {
+
+        System.out.printf("%6s-%30s-%7s-%12s%n", deputado[0], deputado[1], deputado[2], deputado[3]);
+
+        String texto = "ATUALIZAR" + "\n NOME ... 1"
+                + "\n DATA NASCIMENTO ... 2" + "\n TERMINAR ... 0"
+                + "\n\nQUAL A SUA OPÇÃO?";
+        System.out.printf("%n%s%n", texto);
+        int op = sc.nextInt();
+        sc.nextLine();
+        return op;
+    }
+
+    public static int menu(String deputados[][]) throws FileNotFoundException {
+        int op;
+        int numDeputados = 0;
+        do {
+            System.out
+                    .print("1 - Ler informação do ficheiro de texto \n2 - Listar informação de deputados \n3 - Menu alterar informação de deputado \n4 - Ver votação \n5 - Ver informação deputados  na votação \n6 - Ver Resultados da ultima votação \n7 - Ver resultados por idades \n8- Criar página HTML\n9 - Sair");
+            op = sc.nextInt();
+            switch (op) {
+                case 1:
+                    numDeputados = lerInfoFicheiro(deputados);
+                    break;
+                case 2:
+                    listagemPaginada(deputados, numDeputados);
+                    break;
+                case 3:
+                    String idDeputado;
+                    idDeputado = procurarDeputado();
+                    actualizaInfoDeputado(idDeputado, deputados, numDeputados);
+                    break;
+                case 4:
+                    char[] v = lerVotacoes(numDeputados, deputados);
+                    listagemCharPaginada(v, deputados);
+                    break;
+                case 5:
+                	char[] l = lerVotacoes(numDeputados, deputados);
+                    listagemOrdenada(deputados, numDeputados, l);
+                    break;
+                case 6:
+                	ordenar(deputados, numDeputados);
+                    break;
+                case 7:
+                    break;
+                case 8:
+//                	criarpaginaHTML();
+                    break;
+                case 9:
+                    System.exit(0);
+                default:
+                    System.out.print("Opção Inválida");
+            }
+        } while (true);
+    }
+
+    public static void resultadosVotacao(char votacoes[], String deputados[][], int numDeputados) {
+
+    }
+
+    public static String procurarDeputado() {
+        String id;
+        System.out.print("Qual é o ID do deputado que quer procurar?");
+        id = sc.next();
+        while (id.length() != 5) {
+            System.out
+                    .print("Id Inválido\nQual é o ID do deputado que quer procurar?");
+            id = sc.next();
+        }
+        return id;
+    }
+
+    public static int pesquisarDeputadoPorID(String idDeputado, int numDeputados, String[][] deputados) {
+
+        for (int i = 0; i < numDeputados; i++) {
+            if (deputados[i][0].equals(idDeputado)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static void listagemCharPaginada(char v[], String deputados[][]) {
+        for (int i = 0; i < v.length; i++) {
+            System.out.printf("%-6s | %-30s | %-10s|%-12s | %s \n",
+                    deputados[i][0], deputados[i][1], deputados[i][2], deputados[i][3], v[i]);
+        }
+    }
+    private static void listarCharsemidadePaginada(char v[], String deputados[][]) {
+        for (int i = 0; i < v.length; i++) {
+            System.out.printf("%-6s | %-30s | %-10s | %s \n",
+                    deputados[i][0], deputados[i][1], deputados[i][2], v[i]);
+        }
+    }
+
+    private static void listagemPaginada(String[][] matriz, int nEl) {
+        int contPaginas = 0;
+        for (int i = 0; i < nEl; i++) {
+            if (i % MAX_LINHAS_PAGINA == 0) {
+                if (contPaginas > 0) {
+                    Utilitarios.pausa();
+                }
+                contPaginas++;
+                System.out.println("\nPÁGINA: " + contPaginas);
+                Utilitarios.cabecalho();
+            }
+            System.out.printf("%-6s||%-30s||%-10s||%-12s%n", matriz[i][0],
+                    matriz[i][1], matriz[i][2], matriz[i][3]);
+        }
+    }
+
+    public static char[] lerVotacoes(int numDeputados, String deputados[][]) throws FileNotFoundException {
+        char[] votacoes = new char[numDeputados];
+        System.out.println("Introduzir nome da votação desejada no formato 'LEI_NÚMERO_ANO':");
+        String assuntoVotado = sc.next() + ".txt";
+
+        for (int i = 0; i < votacoes.length; i++) {
+            votacoes[i] = 'F';
+        }
+
+        Scanner fileIn = new Scanner(new File(assuntoVotado));
+        int inx = 0, indiceDeputado;
+
+        while (fileIn.hasNext() && inx < numDeputados) {
+            String linha = fileIn.nextLine();
+
+            if (linha.length() > 0) {
+                linha = linha.trim();
+                indiceDeputado = pesquisarDeputadoPorID(linha.substring(0, 5), numDeputados, deputados);
+                votacoes[indiceDeputado] = linha.charAt(5);
+                inx++;
+            }
+
+        }
+        fileIn.close();
+        return votacoes;
+    }
+
+	public static void listagemOrdenada(String[][] deputados, int numDeputados, char[] v) {
+        deputados = ordenar(deputados, numDeputados);
+
+        for (int i = 0; i < numDeputados; i++) {
+            String nome = deputados[i][1];
+            deputados[i][1] = Utilitarios.nomeApelido(nome);
+        }
+        listarCharsemidadePaginada(v, deputados);
+
+    }
+
+    public static String[][] ordenar(String[][] deputados, int numDeputados) {
+        int coluna = escolherOrdenacao();
+
+        for (int i = 0; i < numDeputados - 1; i++) {
+            for (int j = i + 1; j < numDeputados; j++) {
+                if (deputados[i][coluna].compareTo(deputados[j][coluna]) > 0) {
+                    String[] temp = deputados[i];
+                    deputados[i] = deputados[j];
+                    deputados[j] = temp;
+
+                }
+            }
+        }
+        return deputados;
+    }
+
+    /**
+     * menu para escolher critério de ordenação
+     *
+     * @return
+     */
+    public static int escolherOrdenacao() {
+        String op;
+        int coluna = 0;
+
+        System.out.println("Ordenar listagem por:");
+
+        System.out.println("1 - Código do deputado");
+        System.out.println("2 - Nome do deputado");
+        System.out.println("3 - Partido");
+
+        op = sc.next();
+
+        switch (op) {
+            case "1":
+                coluna = 0;
+                break;
+            case "2":
+                coluna = 1;
+                break;
+            case "3":
+                coluna = 2;
+                break;
+        }
+
+        return coluna;
+
+    }
+
+	public static void criarpaginaHTML(String assunto)
+			throws FileNotFoundException {
+		if (assunto == null) {
+			System.out.println();
+			return;
+		}
+		File fileResultados = new File("Resultados" + assunto + ".txt");
+		if (!fileResultados.exists()) {
+			System.out.println("O ficheiro não existe");
+			return;
+		}
+
+		Scanner ler = new Scanner(fileResultados);
+		Formatter pag = new Formatter(new File("Pagina.html"));
+		PaginaHTML.iniciarPagina(pag, assunto);
+		int nLinha = 0;
+		String linha;
+		String[][] conteudoTabela = new String[MAX_DEPUTADOS][4];
+		int nLinhaTabela = 0;
+		while (ler.hasNextLine()) {
+			linha = ler.nextLine();
+			if (!linha.isEmpty()) {
+				if (nLinha == 0) {
+					nLinha++;
+					PaginaHTML.cabecalho(pag, nLinha, linha);
+				} else {
+					String[] temp = linha.split(";");
+					for (int i = 0; i < temp.length; i++) {
+						conteudoTabela[nLinhaTabela][i] = temp[i];
+					}
+					nLinhaTabela++;
+				}
+			}
+		}
+		PaginaHTML
+				.criarTabelaSemLinhaTitulos(pag, conteudoTabela, nLinhaTabela);
+		PaginaHTML.fecharPaginaComData(pag);
+		ler.close();
+		pag.close();
+	}
+}
+
